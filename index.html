@@ -80,11 +80,6 @@
       const subclassIdx = findHeaderId(header, 'subclass')
       const idIdx = header.findIndex(e => e == 'ID')
 
-      if (specIdIdx == -1) {
-        window.alert('A tabela precisa ter alguma coluna specObjID do SDSS.')
-        return
-      }
-
       const tbody = document.getElementById('table').getElementsByTagName('tbody')[0]
       for (let i = 1; i < data.length; i++) {
         const row = tbody.insertRow()
@@ -101,12 +96,20 @@
 
         cellRA.innerHTML = ra
         cellDEC.innerHTML = dec
-        cellEW.innerHTML = data[i][ewIdx]
-        cellSubclass.innerHTML = data[i][subclassIdx]
-        const specUrl = `http://skyserver.sdss.org/dr16/en/get/SpecById.ashx?id=${data[i][specIdIdx]}`
-        cellSPEC.innerHTML = `<a href="${specUrl}" data-lightbox="spec"><img src="${specUrl}" width="180px" height="90px" loading="lazy" /></a>`
-        const splusSpecUrl = `plots/${data[i][idIdx]}`
-        cellSplusSpec.innerHTML = `<a href="${splusSpecUrl}" data-lightbox="splus-spec"><img src="${splusSpecUrl}" height="90px" loading="lazy" /></a>`
+        if (ewIdx > -1) {
+          cellEW.innerHTML = data[i][ewIdx]
+        }
+        if (subclassIdx > -1) {
+          cellSubclass.innerHTML = data[i][subclassIdx]
+        }
+        if (specIdIdx > -1) {
+          const specUrl = `http://skyserver.sdss.org/dr16/en/get/SpecById.ashx?id=${data[i][specIdIdx]}`
+          cellSPEC.innerHTML = `<a href="${specUrl}" data-lightbox="spec"><img src="${specUrl}" width="180px" height="90px" loading="lazy" /></a>`
+        }
+        if (idIdx > -1) {
+          const splusSpecUrl = `plots/${data[i][idIdx]}`
+          cellSplusSpec.innerHTML = `<a href="${splusSpecUrl}" data-lightbox="splus-spec"><img src="${splusSpecUrl}" height="90px" loading="lazy" /></a>`
+        }
         const imgUrl = `https://www.legacysurvey.org/viewer/cutout.jpg?ra=${ra}&dec=${dec}&layer=dr8&pixscale=0.50`
         cellImage.innerHTML = `<a href="${imgUrl}" data-lightbox="legacy-rgb"><img src="${imgUrl}" height="90px" loading="lazy" /></a>`
       }
