@@ -20,9 +20,19 @@
 </head>
 
 <body>
-  <span>Load table: </span>
-  <input type="file" id="input">
-  <br /><br />
+  <p>Load table: <input type="file" id="input">
+    (<a href="emission_lines_crossmatch.csv">Click here</a> to download the table)
+  </p>
+  <p>Notes:
+  <ul>
+    <li>To load SDSS Spectra, a column called <b>specObjID</b> must be provided;</li>
+    <li>To load SPLUS Spectra, a column called <b>ID</b> must be provided;</li>
+    <li>To load Legacy Server Image, columns called <b>RA</b> and <b>DEC</b> must be provided;</li>
+    <li>To load EW, a column called <b>EW_Ha_6562</b> must be provided;</li>
+    <li>To load Subclass, a column called <b>subclass</b> must be provided;</li>
+  </ul>
+  </p>
+  <br />
   <table id="table">
     <thead>
       <tr>
