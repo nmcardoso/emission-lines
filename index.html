@@ -71,14 +71,14 @@
     }
 
     function sddsConeSearch(args) {
-      fetch(`http://skyserver.sdss.org/dr16/SkyServerWS/SpectroQuery/ConeSpectro?radius=0.01667&dec=${args.dec}&ra=${args.ra}&limit=1&format=xml&specparams=specObjID,subclass&imgparams=none&zWarning=on`)
+      fetch(`https://skyserver.sdss.org/dr16/SkyServerWS/SpectroQuery/ConeSpectro?radius=0.01667&dec=${args.dec}&ra=${args.ra}&limit=1&format=xml&specparams=specObjID,subclass&imgparams=none&zWarning=on`)
         .then(r => r.text())
         .then(str => (new DOMParser()).parseFromString(str, 'application/xml'))
         .then(data => {
           if (args.imageElement) {
             let id = data.querySelector('Table[name="Table1"] > Row > Item[name="specObjID"]')
             if (id) {
-              const specUrl = `http://skyserver.sdss.org/dr16/en/get/SpecById.ashx?id=${id.textContent}`
+              const specUrl = `https://skyserver.sdss.org/dr16/en/get/SpecById.ashx?id=${id.textContent}`
               args.imageElement.innerHTML = `<a href="${specUrl}" data-lightbox="row-${args.rowId}"><img src="${specUrl}" width="180px" height="90px" loading="lazy" /></a>`
             }
           }
@@ -131,7 +131,7 @@
           sdssRow.subclassElement = cellSubclass
         }
         if (specIdIdx > -1) {
-          const specUrl = `http://skyserver.sdss.org/dr16/en/get/SpecById.ashx?id=${data[i][specIdIdx]}`
+          const specUrl = `https://skyserver.sdss.org/dr16/en/get/SpecById.ashx?id=${data[i][specIdIdx]}`
           cellSPEC.innerHTML = `<a href="${specUrl}" data-lightbox="row-${i}"><img src="${specUrl}" width="180px" height="90px" loading="lazy" /></a>`
         } else if (specIdIdx <= -1 || !!!data[i][specIdIdx]) {
           sdssRow.imageElement = cellSPEC
