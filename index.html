@@ -23,6 +23,13 @@
   <p>Load table: <input type="file" id="input">
     (<a href="emission_lines_crossmatch.csv">Click here</a> to download the table)
   </p>
+  <p>
+    Select <b>Z</b> search radius (in arcsec): <input type="text" id="radius" value="3" />
+  </p>
+  <p>
+    <button id="load-table">LOAD TABLE</button>
+  </p>
+  <br>
   <p>Notes:
   <ul>
     <li>To load SDSS Spectra, this program looks first for <b>specObjID</b> column, if missing a cone search will be
@@ -93,7 +100,13 @@
     }
 
     function redshiftSearch(ra, dec, element) {
-      const delta = 3 / 3600
+      let delta = document.getElementById('radius').value
+      if (!!delta) {
+        delta = parseFloat(delta) / 3600
+      } else {
+        delta = 3.0 / 3600
+      }
+
       fetch(`https://red-mirror.herokuapp.com/https://www.legacysurvey.org/viewer/spec/1/cat.json?ralo=${ra - delta}&rahi=${ra + delta}&declo=${dec - delta}&dechi=${dec + delta}`, { headers: { 'Origin': 'google.com' } })
         .then(r => r.json())
         .then(data => {
@@ -186,7 +199,8 @@
     }
 
     function handleFile() {
-      const file = this.files[0]
+      document.getElementById('table').getElementsByTagName('tbody')[0].innerHTML = ''
+      const file = document.getElementById('input').files[0]
       Papa.parse(file, {
         complete: createTable,
         dynamicTyping: true,
@@ -194,7 +208,8 @@
       })
     }
 
-    document.getElementById('input').addEventListener('change', handleFile, false)
+    // document.getElementById('input').addEventListener('change', handleFile, false)
+    document.getElementById('load-table').addEventListener('click', handleFile, false)
 
     $(document).ready(() => {
       lightbox.option({
