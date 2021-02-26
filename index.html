@@ -53,7 +53,8 @@
         <th>Z</th>
         <th>SPEC</th>
         <th>S-SPEC</th>
-        <th>Image</th>
+        <th>LegacySurvey</th>
+        <th>S-PLUS Image</th>
       </tr>
     </thead>
     <tbody>
@@ -144,7 +145,7 @@
       const tbody = document.getElementById('table').getElementsByTagName('tbody')[0]
       for (let i = 1; i < data.length; i++) {
         const row = tbody.insertRow()
-        const cellSelect = row.insertCell()
+        // const cellSelect = row.insertCell()
         const cellID = row.insertCell()
         const cellRA = row.insertCell()
         const cellDEC = row.insertCell()
@@ -154,6 +155,7 @@
         const cellSPEC = row.insertCell()
         const cellSplusSpec = row.insertCell()
         const cellImage = row.insertCell()
+        const cellSplusImage = row.insertCell()
 
         const ra = data[i][raIdx]
         const dec = data[i][decIdx]
@@ -187,7 +189,9 @@
         redshiftArray.push({ ra, dec, cellRedshift })
         const imgUrl = `https://www.legacysurvey.org/viewer/cutout.jpg?ra=${ra}&dec=${dec}&layer=dr8&pixscale=0.30`
         cellImage.innerHTML = `<a href="${imgUrl}" data-lightbox="row-${i}"><img src="${imgUrl}" height="90px" loading="lazy" /></a>`
-        cellSelect.innerHTML = `<select`
+        const splusImgUrl = `https://goldenrod-midnight-trader.glitch.me/img?ra=${ra}&dec=${dec}`
+        cellSplusImage.innerHTML = `<a href="${splusImgUrl}" data-lightbox="row-${i}"><img src="${splusImgUrl}" height="90px" loading="lazy" /></a>`
+        // cellSelect.innerHTML = `<select >`
 
         if ('subclassElement' in sdssRow || 'imageElement' in sdssRow) {
           sdssRow.ra = ra
