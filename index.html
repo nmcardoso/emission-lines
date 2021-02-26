@@ -45,6 +45,7 @@
   <table id="table">
     <thead>
       <tr>
+        <th>ID</th>
         <th>RA</th>
         <th>DEC</th>
         <th>EW</th>
@@ -143,6 +144,7 @@
       const tbody = document.getElementById('table').getElementsByTagName('tbody')[0]
       for (let i = 1; i < data.length; i++) {
         const row = tbody.insertRow()
+        const cellID = row.insertCell()
         const cellRA = row.insertCell()
         const cellDEC = row.insertCell()
         const cellEW = row.insertCell()
@@ -159,6 +161,9 @@
         cellDEC.innerHTML = dec
         const sdssRow = {}
 
+        if (idIdx > -1) {
+          cellID.innerHTML = data[i][idIdx]
+        }
         if (ewIdx > -1) {
           cellEW.innerHTML = data[i][ewIdx]
         }
