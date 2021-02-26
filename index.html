@@ -50,22 +50,29 @@
       <div class="row mb-1">
         <label for="input" class="col-1 col-form-label">Table File</label>
         <div class="col-4">
-          <input class="form-control" type="file" id="input">
+          <div class="row">
+            <div class="col-9">
+              <input class="form-control" type="file" id="input">
+            </div>
+            <div class="col-3">
+              <button type="submit" class="btn btn-primary w-100" id="load-table">Load Table</button>
+            </div>
+          </div>
         </div>
       </div>
 
-      <button type="submit" class="btn btn-primary" id="load-table">Load Table</button>
+
     </form>
 
     <br>
 
     <form id="download-form">
       <div class="row mb-1 align-items-center">
-        <label for="download-filename" class="col-1 col-form-label">Save Classifications</label>
+        <label for="download-filename" class="col-auto col-form-label"><b>Save Classifications</b></label>
         <div class="col-3">
           <div class="input-group mb-1">
-            <input id="download-filename" type="text" class="form-control" placeholder="File Name">
-            <button type="submit" class="btn btn-primary" type="button">Download</button>
+            <input id="download-filename" type="text" class="form-control" placeholder="Filename">
+            <button type="submit" class="btn btn-outline-primary" type="button">Download</button>
           </div>
         </div>
       </div>
