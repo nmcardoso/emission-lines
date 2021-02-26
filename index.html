@@ -144,6 +144,7 @@
       const tbody = document.getElementById('table').getElementsByTagName('tbody')[0]
       for (let i = 1; i < data.length; i++) {
         const row = tbody.insertRow()
+        const cellSelect = row.insertCell()
         const cellID = row.insertCell()
         const cellRA = row.insertCell()
         const cellDEC = row.insertCell()
@@ -184,8 +185,9 @@
         }
 
         redshiftArray.push({ ra, dec, cellRedshift })
-        const imgUrl = `https://www.legacysurvey.org/viewer/cutout.jpg?ra=${ra}&dec=${dec}&layer=dr8&pixscale=0.50`
+        const imgUrl = `https://www.legacysurvey.org/viewer/cutout.jpg?ra=${ra}&dec=${dec}&layer=dr8&pixscale=0.30`
         cellImage.innerHTML = `<a href="${imgUrl}" data-lightbox="row-${i}"><img src="${imgUrl}" height="90px" loading="lazy" /></a>`
+        cellSelect.innerHTML = `<select`
 
         if ('subclassElement' in sdssRow || 'imageElement' in sdssRow) {
           sdssRow.ra = ra
