@@ -5,71 +5,157 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Emission Lines</title>
-  <style>
-    table,
-    th,
-    td {
-      border: 1px solid black;
-      border-collapse: collapse;
-      padding: 3px;
-    }
-
-    td {
-      max-width: 192px;
-    }
-  </style>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
   <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0"
+    crossorigin="anonymous"></script>
+
+  <style>
+    td {
+      max-width: 192px;
+    }
+
+    hr {
+      margin: 0.3rem 0 !important;
+    }
+  </style>
 </head>
 
 <body>
-  <p>Load table: <input type="file" id="input">
-    (<a href="emission_lines_crossmatch.csv">Click here</a> to download the table)
-  </p>
-  <p>
-    Select <b>Z</b> search radius (in arcsec): <input type="text" id="radius" value="3" />
-  </p>
-  <p>
-    <button id="load-table">LOAD TABLE</button>
-  </p>
-  <br>
-  <p>Notes:
-  <ul>
-    <li>To load SDSS Spectra, this program looks first for <b>specObjID</b> column, if missing a cone search will be
-      performed using <b>RA</b> and <b>DEC</b> columns with 1 arcsec of radius;</li>
-    <li>To load SPLUS Spectra, a column called <b>ID</b> must be provided;</li>
-    <li>To load Legacy Server Image, columns called <b>RA</b> and <b>DEC</b> must be provided;</li>
-    <li>To load EW, a column called <b>EW_Ha_6562</b> must be provided;</li>
-    <li>To load Subclass, this program looks first for <b>subclass</b> column, if missing a cone search will be
-      performed using <b>RA</b> and <b>DEC</b> columns with 1 arcsec of radius.</li>
-  </ul>
-  </p>
-  <br />
-  <table id="table">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>RA</th>
-        <th>DEC</th>
-        <th>EW</th>
-        <th>Subclass</th>
-        <th>Z</th>
-        <th>SPEC</th>
-        <th>S-SPEC</th>
-        <th>Legacy</th>
-        <th>S-PLUS</th>
-      </tr>
-    </thead>
-    <tbody>
-    </tbody>
-  </table>
+  <div class="container-fluid">
+    <form id="form" class="mt-2">
+      <div class="row mb-1">
+        <label for="radius" class="col-1 col-form-label"><b>Z</b> Search Radius</label>
+        <div class="col-4">
+          <input type="text" class="form-control" id="radius" value="20">
+        </div>
+      </div>
+
+      <div class="row mb-1">
+        <label for="classes" class="col-1 col-form-label">Classes</label>
+        <div class="col-4">
+          <div class="input-group mb-1">
+            <input id="class-input" type="text" class="form-control" placeholder="Class Name">
+            <button id="add-class" class="btn btn-success" type="button">Add</button>
+            <button id="remove-class" class="btn btn-danger" type="button">Remove</button>
+          </div>
+          <select class="form-select" size="5" id="classes"></select>
+        </div>
+      </div>
+
+      <div class="row mb-1">
+        <label for="input" class="col-1 col-form-label">Table File</label>
+        <div class="col-4">
+          <input class="form-control" type="file" id="input">
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary" id="load-table">Load Table</button>
+    </form>
+
+    <br>
+
+    <form id="download-form">
+      <div class="row mb-1 align-items-center">
+        <label for="download-filename" class="col-1 col-form-label">Save Classifications</label>
+        <div class="col-3">
+          <div class="input-group mb-1">
+            <input id="download-filename" type="text" class="form-control" placeholder="File Name">
+            <button type="submit" class="btn btn-primary" type="button">Download</button>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <br>
+
+    <p>Notes:
+    <ul>
+      <li>To load SDSS Spectra, this program looks first for <b>specObjID</b> column, if missing a cone search will be
+        performed using <b>RA</b> and <b>DEC</b> columns with 1 arcsec of radius;</li>
+      <li>To load SPLUS Spectra, a column called <b>ID</b> must be provided;</li>
+      <li>To load Legacy Server Image, columns called <b>RA</b> and <b>DEC</b> must be provided;</li>
+      <li>To load EW, a column called <b>EW_Ha_6562</b> must be provided;</li>
+      <li>To load Subclass, this program looks first for <b>subclass</b> column, if missing a cone search will be
+        performed using <b>RA</b> and <b>DEC</b> columns with 1 arcsec of radius.</li>
+    </ul>
+    </p>
+    <br />
+    <table id="table" class="table table-striped table-hover">
+      <thead>
+        <tr>
+          <th style="min-width: 170px;">Class</th>
+          <th>ID</th>
+          <th>RA</th>
+          <th>DEC</th>
+          <th>EW</th>
+          <th>Subclass</th>
+          <th>Z</th>
+          <th>SPEC</th>
+          <th>S-SPEC</th>
+          <th>Legacy</th>
+          <th>S-PLUS</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"
     integrity="sha512-rKFvwjvE4liWPlFnvH4ZhRDfNZ9FOpdkD/BU5gAIA3VS3vOQrQ5BjKgbO3kxebKhHdHcNUHLqxQYSoxee9UwgA=="
     crossorigin="anonymous"></script>
 
   <script>
+    function addClass() {
+      const className = document.getElementById('class-input')
+      if (!className.value) return
+      const allClasses = document.getElementById('classes')
+      const option = document.createElement('option')
+      option.text = className.value
+      option.value = className.value
+      allClasses.add(option)
+      className.value = ''
+    }
+
+    function removeClass() {
+      const allClasses = document.getElementById('classes')
+      allClasses.remove(allClasses.selectedIndex)
+    }
+
+    function download() {
+      console.log('aqui')
+      const rows = document.getElementById('table').getElementsByTagName('tbody')[0].children
+      let csv = 'data:text/csv;charset=utf-8,ID,RA,DEC,CLASS\n'
+
+      for (let i = 0; i < rows.length; i++) {
+        if (rows[i].getElementsByClassName('class-selector')[0].selectedIndex < 1) continue
+
+        const className = rows[i].getElementsByClassName('class-selector')[0].value
+        const id = rows[i].getElementsByClassName('id-cell')[0].textContent
+        const ra = rows[i].getElementsByClassName('ra-cell')[0].textContent
+        const dec = rows[i].getElementsByClassName('dec-cell')[0].textContent
+        csv += `${id},${ra},${dec},${className}\n`
+      }
+
+      let filename = document.getElementById('download-filename').value || 'table.csv'
+      filename = filename.trim()
+      filename += filename.endsWith('.csv') ? '' : '.csv'
+
+      const encodedCsv = encodeURI(csv)
+      const $a = document.createElement('a')
+      $a.setAttribute('href', encodedCsv)
+      $a.setAttribute('download', filename)
+      document.body.appendChild($a)
+      console.log('aqui 2')
+      $a.click()
+      $a.remove()
+    }
+
     function toNumber(n) {
       const parts = n.split('E+');
       let first = parts[0].replace('.', '').replace(',', '');
@@ -146,10 +232,16 @@
       const specArray = []
       const redshiftArray = []
 
+      const classes = ['-']
+      const $classes = document.getElementById('classes')
+      for (let i = 0; i < $classes.length; i++) {
+        classes.push($classes.options.item(i).value)
+      }
+
       const tbody = document.getElementById('table').getElementsByTagName('tbody')[0]
       for (let i = 1; i < data.length; i++) {
         const row = tbody.insertRow()
-        // const cellSelect = row.insertCell()
+        const cellClass = row.insertCell()
         const cellID = row.insertCell()
         const cellRA = row.insertCell()
         const cellDEC = row.insertCell()
@@ -160,6 +252,10 @@
         const cellSplusSpec = row.insertCell()
         const cellImage = row.insertCell()
         const cellSplusImage = row.insertCell()
+
+        cellID.classList.add('id-cell')
+        cellRA.classList.add('ra-cell')
+        cellDEC.classList.add('dec-cell')
 
         const ra = data[i][raIdx]
         const dec = data[i][decIdx]
@@ -195,7 +291,7 @@
         cellImage.innerHTML = `<a href="${imgUrl}" data-lightbox="row-${i}"><img src="${imgUrl}" height="90px" loading="lazy" /></a>`
         const splusImgUrl = `https://goldenrod-midnight-trader.glitch.me/img?ra=${ra}&dec=${dec}`
         cellSplusImage.innerHTML = `<a href="${splusImgUrl}" data-lightbox="row-${i}"><img src="${splusImgUrl}" height="90px" loading="lazy" /></a>`
-        // cellSelect.innerHTML = `<select >`
+        cellClass.innerHTML = `<select class="form-select class-selector">${classes.map(c => `<option value=${c}>${c}</option>`).join()}</select>`
 
         if ('subclassElement' in sdssRow || 'imageElement' in sdssRow) {
           sdssRow.ra = ra
@@ -224,7 +320,10 @@
     }
 
     // document.getElementById('input').addEventListener('change', handleFile, false)
-    document.getElementById('load-table').addEventListener('click', handleFile, false)
+    document.getElementById('form').addEventListener('submit', e => { e.preventDefault(); handleFile() }, true)
+    document.getElementById('download-form').addEventListener('submit', e => { e.preventDefault(); download() }, true)
+    document.getElementById('add-class').addEventListener('click', addClass)
+    document.getElementById('remove-class').addEventListener('click', removeClass)
 
     $(document).ready(() => {
       lightbox.option({
