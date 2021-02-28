@@ -245,8 +245,6 @@
     function createTable(result) {
       const data = result.data
       const header = data[0]
-      console.log(header)
-      console.log(data.length)
       const specIdIdx = findHeaderId(header, 'specObjID')
       const raIdx = findHeaderId(header, 'ra')
       const decIdx = findHeaderId(header, 'dec')
