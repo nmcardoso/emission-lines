@@ -336,8 +336,8 @@
           sdssRow.imageElement = cellSPEC
         }
 
-        const splusSpecUrl = `http://localhost:8080/plot?id=${data[i][idIdx]}&${sspecLines.join('&')}`
-        cellSplusSpec.innerHTML = `<a href="${splusSpecUrl}"><img src="${splusSpecUrl}" height="90px" loading="lazy" /></a>`
+        const splusSpecUrl = `http://splus-spectra.herokuapp.com/plot?id=${data[i][idIdx]}&${sspecLines.join('&')}`
+        cellSplusSpec.innerHTML = `<a href="${splusSpecUrl}" data-lightbox="row-${i}"><img src="${splusSpecUrl}" height="90px" loading="lazy" /></a>`
 
         redshiftArray.push({ ra, dec, cellRedshift })
         const imgUrl = `https://www.legacysurvey.org/viewer/cutout.jpg?ra=${ra}&dec=${dec}&layer=dr8&pixscale=0.30`
