@@ -252,7 +252,7 @@
       const decIdx = findHeaderId(header, 'dec')
       const ewIdx = findHeaderId(header, 'EW_Ha_6562')
       const subclassIdx = findHeaderId(header, 'subclass')
-      const idIdx = header.findIndex(e => e == 'ID')
+      const idIdx = header.findIndex(e => e.toLowerCase() == 'id')
       const specArray = []
       const redshiftArray = []
 
