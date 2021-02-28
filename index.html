@@ -241,6 +241,27 @@
         })
     }
 
+    const asyncInterval = async (ra, dec, element, runId) => {
+      return new Promise(async (resolve, reject) => {
+        const resp = await fetch(`http://localhost:8080/spec/query?ra=${ra}&dec=${dec}`)
+        const job = await resp.json()
+        const jobId = job.jobId
+
+        const interval = setInterval(async () => {
+          if (runId + 1 < lastRunId) clearInterval(interval)
+
+          const statusResp = await fetch(`http://localhost:8080/spec/plot?jobId=${jobId}`)
+          if (statusResp.headers.get('Content-Type') == 'image/jpg') {
+            const imgBlob = await statusResp.blob()
+            const url = URL.createObjectURL(imgBlob)
+            element.getElementsByTagName('img')[0].src = url
+            resolve()
+            clearInterval(interval)
+          }
+        }, 8500)
+      })
+    }
+
     function createTable(result) {
       const data = result.data
       const header = data[0]
