@@ -339,6 +339,7 @@
 
     function handleFile() {
       document.getElementById('table').getElementsByTagName('tbody')[0].innerHTML = ''
+      if (document.getElementById('input').files.length < 1) return
       const file = document.getElementById('input').files[0]
       Papa.parse(file, {
         complete: createTable,
