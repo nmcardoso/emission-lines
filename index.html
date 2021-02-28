@@ -70,6 +70,10 @@
             <input class="form-check-input" type="checkbox" id="sel-petro">
             <label class="form-check-label" for="sel-petro">Petro</label>
           </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="sel-pstotal">
+            <label class="form-check-label" for="sel-pstotal">PStotal</label>
+          </div>
         </div>
       </div>
 
@@ -288,7 +292,7 @@
         classes.push($classes.options.item(i).value)
       }
 
-      const sspecLines = ['iso', 'aper3', 'aper6', 'auto', 'petro'].filter(e => {
+      const sspecLines = ['iso', 'aper3', 'aper6', 'auto', 'petro', 'pstotal'].filter(e => {
         return document.getElementById(`sel-${e}`).checked
       })
 
