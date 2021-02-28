@@ -62,6 +62,14 @@
             <input class="form-check-input" type="checkbox" id="sel-aper3">
             <label class="form-check-label" for="sel-aper3">Aper-3</label>
           </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="sel-auto">
+            <label class="form-check-label" for="sel-auto">Auto</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="sel-petro">
+            <label class="form-check-label" for="sel-petro">Petro</label>
+          </div>
         </div>
       </div>
 
@@ -280,7 +288,7 @@
         classes.push($classes.options.item(i).value)
       }
 
-      const sspecLines = ['iso', 'aper3', 'aper6'].filter(e => {
+      const sspecLines = ['iso', 'aper3', 'aper6', 'auto', 'petro'].filter(e => {
         return document.getElementById(`sel-${e}`).checked
       })
 
