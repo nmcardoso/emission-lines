@@ -348,8 +348,14 @@
     }
 
     // document.getElementById('input').addEventListener('change', handleFile, false)
-    document.getElementById('form').addEventListener('submit', e => { e.preventDefault(); handleFile() }, true)
-    document.getElementById('download-form').addEventListener('submit', e => { e.preventDefault(); download() }, true)
+    document.getElementById('form').addEventListener('submit', e => {
+      e.preventDefault()
+      handleFile()
+    }, true)
+    document.getElementById('download-form').addEventListener('submit', e => {
+      e.preventDefault()
+      download()
+    }, true)
     document.getElementById('add-class').addEventListener('click', addClass)
     document.getElementById('remove-class').addEventListener('click', removeClass)
 
