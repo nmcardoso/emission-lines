@@ -163,6 +163,13 @@
       allClasses.remove(allClasses.selectedIndex)
     }
 
+    function triggerButton(event) {
+      if (event.keyCode === 13) {
+        event.preventDefault()
+        document.getElementById('add-class').click()
+      }
+    }
+
     function download() {
       console.log('aqui')
       const rows = document.getElementById('table').getElementsByTagName('tbody')[0].children
@@ -402,6 +409,7 @@
     }, true)
     document.getElementById('add-class').addEventListener('click', addClass)
     document.getElementById('remove-class').addEventListener('click', removeClass)
+    document.getElementById('class-input').addEventListener('keyup', triggerButton)
 
     $(document).ready(() => {
       lightbox.option({
