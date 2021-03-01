@@ -340,7 +340,7 @@
           sdssRow.imageElement = cellSPEC
         }
 
-        const splusSpecUrl = `http://splus-spectra.herokuapp.com/plot?id=${data[i][idIdx]}&${sspecLines.join('&')}`
+        const splusSpecUrl = `https://splus-spectra.herokuapp.com/plot?id=${data[i][idIdx]}&${sspecLines.join('&')}`
         cellSplusSpec.innerHTML = `<a href="${splusSpecUrl}" data-lightbox="row-${i}"><img src="${splusSpecUrl}" height="90px" loading="lazy" /></a>`
 
         redshiftArray.push({ ra, dec, cellRedshift })
@@ -377,6 +377,18 @@
         skipEmptyLines: true
       })
     }
+
+    function wakeupServices() {
+      urls = [
+        'https://splus-spectra.herokuapp.com/wakeup',
+        'https://goldenrod-midnight-trader.glitch.me/',
+        'https://red-mirror.herokuapp.com/'
+      ]
+
+      Promise.all(urls.map(u => fetch(u))).catch(console.log)
+    }
+
+    wakeupServices()
 
     // document.getElementById('input').addEventListener('change', handleFile, false)
     document.getElementById('form').addEventListener('submit', e => {
