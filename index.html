@@ -147,6 +147,30 @@
     crossorigin="anonymous"></script>
 
   <script>
+    function updateQueryString(uri, key, value) {
+      const re = new RegExp('([?&])' + key + '=.*?(&|$)', 'i')
+      const separator = uri.indexOf('?') !== -1 ? '&' : '?'
+      if (uri.match(re)) {
+        return uri.replace(re, '$1' + key + '=' + value + '$2')
+      }
+      else {
+        return uri + separator + key + '=' + value
+      }
+    }
+
+    function retryImageLoad(element) {
+      console.log('retrying to load image: ' + attempt)
+      let attempt = element.dataset.attempt || 0
+      if (attempt > 5) {
+        element.src = 'https://dummyimage.com/128x128/e8e8e8/474747.jpg&text=Not+Found'
+      } else {
+        attempt++
+        element.src = updateQueryString(element.src, 'attempt', attempt)
+        element.dataset.attempt = attempt
+      }
+      return true
+    }
+
     function addClass() {
       const className = document.getElementById('class-input')
       if (!className.value) return
@@ -343,22 +367,22 @@
         }
         if (specIdIdx > -1) {
           const specUrl = `https://skyserver.sdss.org/dr16/en/get/SpecById.ashx?id=${data[i][specIdIdx]}`
-          cellSPEC.innerHTML = `<a href="${specUrl}" data-lightbox="row-${i}"><img src="${specUrl}" width="180px" height="90px" loading="lazy" /></a>`
+          cellSPEC.innerHTML = `<a href="${specUrl}" data-lightbox="row-${i}"><img src="${specUrl}" width="180px" height="90px" loading="lazy" onerror="retryImageLoad(this);" /></a>`
         } else if (specIdIdx <= -1 || !!!data[i][specIdIdx]) {
           sdssRow.imageElement = cellSPEC
         }
 
         if (idIdx > -1) {
           const splusSpecUrl = `https://splus-spectra.herokuapp.com/plot?id=${data[i][idIdx]}&${sspecLines.join('&')}`
-          cellSplusSpec.innerHTML = `<a href="${splusSpecUrl}" data-lightbox="row-${i}"><img src="${splusSpecUrl}" height="90px" loading="lazy" /></a>`
+          cellSplusSpec.innerHTML = `<a href="${splusSpecUrl}" data-lightbox="row-${i}"><img src="${splusSpecUrl}" height="90px" loading="lazy" onerror="retryImageLoad(this);" /></a>`
         }
 
         redshiftArray.push({ ra, dec, cellRedshift })
         const imgUrl = `https://www.legacysurvey.org/viewer/cutout.jpg?ra=${ra}&dec=${dec}&layer=dr8&pixscale=0.30`
-        cellImage.innerHTML = `<a href="${imgUrl}" data-lightbox="row-${i}"><img src="${imgUrl}" height="90px" loading="lazy" /></a>`
+        cellImage.innerHTML = `<a href="${imgUrl}" data-lightbox="row-${i}"><img src="${imgUrl}" height="90px" loading="lazy" onerror="retryImageLoad(this);" /></a>`
 
         const splusImgUrl = `https://goldenrod-midnight-trader.glitch.me/img?ra=${ra}&dec=${dec}`
-        cellSplusImage.innerHTML = `<a href="${splusImgUrl}" data-lightbox="row-${i}"><img src="${splusImgUrl}" height="90px" loading="lazy" /></a>`
+        cellSplusImage.innerHTML = `<a href="${splusImgUrl}" data-lightbox="row-${i}"><img src="${splusImgUrl}" height="90px" loading="lazy" onerror="retryImageLoad(this);" /></a>`
         cellClass.innerHTML = `<select class="form-select class-selector">${classes.map(c => `<option value=${c}>${c}</option>`).join()}</select>`
 
         if ('subclassElement' in sdssRow || 'imageElement' in sdssRow) {
