@@ -233,7 +233,7 @@
 
     function findHeaderId(header, str) {
       return header.findIndex(e => {
-        return String(e).toLowerCase().includes(String(str).toLowerCase())
+        return String(e).toLowerCase().startsWith(String(str).toLowerCase())
       })
     }
 
@@ -314,7 +314,7 @@
       const decIdx = findHeaderId(header, 'dec')
       const ewIdx = findHeaderId(header, 'EW_Ha_6562')
       const subclassIdx = findHeaderId(header, 'subclass')
-      const idIdx = header.findIndex(e => e.toLowerCase() == 'id')
+      const idIdx = findHeaderId(header, 'id')
       const specArray = []
       const redshiftArray = []
 
