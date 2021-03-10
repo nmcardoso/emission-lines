@@ -352,7 +352,7 @@
         .then(r => r.json())
         .then(data => {
           const redshifts = []
-          for (let i = 0; i < data.name.length; i++) {
+          for (let i = 0; i < Math.min(data.name.length, 4); i++) {
             const raNear = data.rd[i][0]
             const decNear = data.rd[i][1]
 
