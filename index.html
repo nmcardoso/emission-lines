@@ -23,6 +23,50 @@
     hr {
       margin: 0.3rem 0 !important;
     }
+
+    table img:hover {
+      cursor: pointer;
+    }
+
+    .img-overlay-wrap {
+      position: relative;
+      display: inline-block;
+      transition: transform 150ms ease-in-out;
+    }
+
+    .img-overlay-wrap img {
+      display: block;
+      max-width: 100%;
+      height: auto;
+    }
+
+    .img-overlay-wrap svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .circle-group:hover {
+      cursor: pointer;
+    }
+
+    .circle-group circle {
+      stroke: white;
+    }
+
+    .circle-group:hover circle {
+      stroke: #AFEEEE;
+    }
+
+    .circle-group text {
+      filter: url(#bg-text);
+      font: 13px px Arial, sans-serif;
+      font-weight: bold;
+    }
+
+    .circle-group:hover text {
+      filter: url(#bg-text-hover);
+    }
   </style>
 </head>
 
@@ -128,9 +172,8 @@
           <th>ID</th>
           <th>RA</th>
           <th>DEC</th>
-          <th>EW</th>
-          <th>Subclass</th>
-          <th>Z</th>
+          <th>PhotoZ</th>
+          <th>Z (spec)</th>
           <th>SPEC</th>
           <th>S-SPEC</th>
           <th>Legacy</th>
@@ -140,6 +183,45 @@
       <tbody>
       </tbody>
     </table>
+  </div>
+
+  <div id="img-modal" class="modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div class="w-100 text-center">
+            <div class="img-overlay-wrap mx-auto">
+              <img id="img-modal-img" src="" width="400px" height="400px" />
+              <svg>
+                <defs>
+                  <filter x="-0.03" y="-0.03" width="1.06" height="1.06" id="bg-text">
+                    <feFlood flood-color="#FFFFFF" />
+                    <feComposite in="SourceGraphic" operator="over" />
+                  </filter>
+                  <filter x="-0.03" y="-0.03" width="1.06" height="1.06" id="bg-text-hover">
+                    <feFlood flood-color="#AFEEEE" />
+                    <feComposite in="SourceGraphic" operator="over" />
+                  </filter>
+                </defs>
+              </svg>
+              <svg id="img-modal-mask-z" viewBox="0 0 400 400"></svg>
+              <svg id="img-modal-mask-photoz" class="d-none" viewBox="0 0 400 400"></svg>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <div class="form-check-inline form-switch">
+            <input class="form-check-input" type="checkbox" id="redshift-overlay-check" checked>
+            <label class="form-check-label" for="redshift-overlay-check">Redshift</label>
+          </div>
+
+          <div class="form-check-inline form-switch">
+            <input class="form-check-input" type="checkbox" id="photoz-overlay-check">
+            <label class="form-check-label" for="photoz-overlay-check">PhotoZ</label>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"
@@ -278,10 +360,104 @@
               ra: raNear,
               dec: decNear,
               name: data.name[i],
-              dist: Math.sqrt(Math.pow(raNear - ra, 2) + Math.pow(decNear - dec, 2))
+              // dist: Math.sqrt(Math.pow(raNear - ra, 2) + Math.pow(decNear - dec, 2))
             })
           }
           element.innerHTML = redshifts.map(r => r.name).join('<hr>')
+        })
+    }
+
+    function redshiftSearchPromise(ra, dec) {
+      let delta = document.getElementById('radius').value
+      if (!!delta) {
+        delta = parseFloat(delta) / 3600
+      } else {
+        delta = 3.0 / 3600
+      }
+
+      ra = parseFloat(ra)
+      dec = parseFloat(dec)
+
+      return new Promise((resolve, reject) => {
+        fetch(`https://red-mirror.herokuapp.com/https://www.legacysurvey.org/viewer/spec/1/cat.json?ralo=${ra - delta}&rahi=${ra + delta}&declo=${dec - delta}&dechi=${dec + delta}`, { headers: { 'Origin': 'google.com' } })
+          .then(r => r.json())
+          .then(data => {
+            const redshifts = []
+            for (let i = 0; i < data.name.length; i++) {
+              const raNear = data.rd[i][0]
+              const decNear = data.rd[i][1]
+
+              redshifts.push({
+                ra: raNear,
+                dec: decNear,
+                z: data.name[i].match(/z=.*/)[0],
+                // dist: Math.sqrt(Math.pow(raNear - ra, 2) + Math.pow(decNear - dec, 2))
+              })
+            }
+            resolve(redshifts)
+          })
+          .catch(e => console.log(e))
+      })
+    }
+
+    function photoZSearchPromise(ra, dec) {
+      let radius = document.getElementById('radius').value
+      if (!!radius) {
+        radius = parseFloat(radius) / 3600
+      } else {
+        radius = 3.0 / 3600
+      }
+
+      ra = parseFloat(ra)
+      dec = parseFloat(dec)
+
+      return new Promise((resolve, reject) => {
+        fetch(`https://goldenrod-midnight-trader.glitch.me/z?ra=${ra}&dec=${dec}&radius=${radius}`)
+          .then(r => r.json())
+          .then(data => {
+            const photozArr = []
+            for (let i = 0; i < data.data.length; i++) {
+              const raNear = data.data[i][0]
+              const decNear = data.data[i][1]
+              photozArr.push({
+                ra: raNear,
+                dec: decNear,
+                photoz: data.data[i][2],
+                // dist: Math.sqrt(Math.pow(raNear - ra, 2) + Math.pow(decNear - dec, 2))
+              })
+            }
+            resolve(photozArr)
+          })
+          .catch(e => console.log(e))
+      })
+    }
+
+    function photoZSearch(ra, dec, element) {
+      let radius = document.getElementById('radius').value
+      if (!!radius) {
+        radius = parseFloat(radius) / 3600
+      } else {
+        radius = 3.0 / 3600
+      }
+
+      ra = parseFloat(ra)
+      dec = parseFloat(dec)
+
+      fetch(`https://goldenrod-midnight-trader.glitch.me/z?ra=${ra}&dec=${dec}&radius=${radius}`)
+        .then(r => r.json())
+        .then(data => {
+          const photozArr = []
+          for (let i = 0; i < data.data.length; i++) {
+            const raNear = data.data[i][0]
+            const decNear = data.data[i][1]
+            photozArr.push({
+              ra: raNear,
+              dec: decNear,
+              photoz: data.data[i][2],
+              // dist: Math.sqrt(Math.pow(raNear - ra, 2) + Math.pow(decNear - dec, 2))
+            })
+          }
+          element.innerHTML = photozArr.map(p => p.photoz).join('<hr>')
         })
     }
 
@@ -317,6 +493,7 @@
       const idIdx = findHeaderId(header, 'id')
       const specArray = []
       const redshiftArray = []
+      const photoZArray = []
 
       const classes = ['-']
       const $classes = document.getElementById('classes')
@@ -335,8 +512,7 @@
         const cellID = row.insertCell()
         const cellRA = row.insertCell()
         const cellDEC = row.insertCell()
-        const cellEW = row.insertCell()
-        const cellSubclass = row.insertCell()
+        const cellPhotoZ = row.insertCell()
         const cellRedshift = row.insertCell()
         const cellSPEC = row.insertCell()
         const cellSplusSpec = row.insertCell()
@@ -357,14 +533,7 @@
         if (idIdx > -1) {
           cellID.innerHTML = data[i][idIdx]
         }
-        if (ewIdx > -1) {
-          cellEW.innerHTML = data[i][ewIdx]
-        }
-        if (subclassIdx > -1) {
-          cellSubclass.innerHTML = data[i][subclassIdx]
-        } else if (specIdIdx <= -1 || !!!data[i][specIdIdx]) {
-          sdssRow.subclassElement = cellSubclass
-        }
+
         if (specIdIdx > -1) {
           const specUrl = `https://skyserver.sdss.org/dr16/en/get/SpecById.ashx?id=${data[i][specIdIdx]}`
           cellSPEC.innerHTML = `<a href="${specUrl}" data-lightbox="row-${i}"><img src="${specUrl}" width="180px" height="90px" loading="lazy" onerror="retryImageLoad(this);" /></a>`
@@ -379,7 +548,9 @@
 
         redshiftArray.push({ ra, dec, cellRedshift })
         const imgUrl = `https://www.legacysurvey.org/viewer/cutout.jpg?ra=${ra}&dec=${dec}&layer=dr8&pixscale=0.30`
-        cellImage.innerHTML = `<a href="${imgUrl}" data-lightbox="row-${i}"><img src="${imgUrl}" height="90px" loading="lazy" onerror="retryImageLoad(this);" /></a>`
+        cellImage.innerHTML = `<img src="${imgUrl}" height="90px" loading="lazy" data-bs-toggle="modal" data-bs-target="#img-modal" data-ra=${ra} data-dec=${dec} onerror="retryImageLoad(this);" />`
+
+        photoZArray.push({ ra, dec, cellPhotoZ })
 
         const splusImgUrl = `https://goldenrod-midnight-trader.glitch.me/img?ra=${ra}&dec=${dec}`
         cellSplusImage.innerHTML = `<a href="${splusImgUrl}" data-lightbox="row-${i}"><img src="${splusImgUrl}" height="90px" loading="lazy" onerror="retryImageLoad(this);" /></a>`
@@ -393,11 +564,14 @@
         }
       }
 
-      specArray.forEach(row => {
-        sddsConeSearch(row)
+      specArray.forEach((row, i) => {
+        setTimeout(() => sddsConeSearch(row), i * 140)
       })
-      redshiftArray.forEach(row => {
-        redshiftSearch(row.ra, row.dec, row.cellRedshift)
+      redshiftArray.forEach((row, i) => {
+        setTimeout(() => redshiftSearch(row.ra, row.dec, row.cellRedshift), i * 140)
+      })
+      photoZArray.forEach((row, i) => {
+        setTimeout(() => photoZSearch(row.ra, row.dec, row.cellPhotoZ), i * 140)
       })
     }
 
@@ -443,6 +617,54 @@
         imageFadeDuration: 180,
         resizeDuration: 180
       })
+    })
+
+    const imageModal = document.getElementById('img-modal')
+    imageModal.addEventListener('show.bs.modal', function (event) {
+      const img = event.relatedTarget
+      const ra = img.getAttribute('data-ra')
+      const dec = img.getAttribute('data-dec')
+      const url = img.getAttribute('src')
+
+      document.getElementById('img-modal-img').src = url
+
+      photoZSearchPromise(ra, dec).then(photozs => {
+        const svg = document.getElementById('img-modal-mask-photoz')
+        const circles = photozs.map(photoz => {
+          return `<g class="circle-group">
+            <circle cx="${200 + (ra - photoz.ra) * (400 / 0.0212)}" cy="${200 + (dec - photoz.dec) * (400 / 0.0213)}" r="40" stroke-width="2px" fill="transparent" />
+            <text x="${200 + (ra - photoz.ra) * (400 / 0.0212)}" y="${230 + (dec - photoz.dec) * (400 / 0.0213)}" fill="black" stroke="transparent" text-anchor="middle" alignment-baseline="hanging">photoz=${photoz.photoz}</text>
+          </g>`
+        })
+        svg.innerHTML = circles.join('')
+      })
+
+      redshiftSearchPromise(ra, dec).then(redshifts => {
+        const svg = document.getElementById('img-modal-mask-z')
+        const circles = redshifts.map(redshift => {
+          return `<g class="circle-group">
+            <circle cx="${200 + (ra - redshift.ra) * (400 / 0.0212)}" cy="${200 + (dec - redshift.dec) * (400 / 0.0213)}" r="40" stroke-width="2px" fill="transparent" />
+            <text x="${200 + (ra - redshift.ra) * (400 / 0.0212)}" y="${230 + (dec - redshift.dec) * (400 / 0.0213)}" fill="black" stroke="transparent" text-anchor="middle" alignment-baseline="hanging">${redshift.z}</text>
+          </g>`
+        })
+        svg.innerHTML = circles.join('')
+      })
+    })
+
+    document.getElementById('redshift-overlay-check').addEventListener('change', function () {
+      if (this.checked === true) {
+        document.getElementById('img-modal-mask-z').classList.remove('d-none')
+      } else {
+        document.getElementById('img-modal-mask-z').classList.add('d-none')
+      }
+    })
+
+    document.getElementById('photoz-overlay-check').addEventListener('change', function () {
+      if (this.checked === true) {
+        document.getElementById('img-modal-mask-photoz').classList.remove('d-none')
+      } else {
+        document.getElementById('img-modal-mask-photoz').classList.add('d-none')
+      }
     })
   </script>
 </body>
