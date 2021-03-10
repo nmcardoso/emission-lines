@@ -633,7 +633,7 @@
         const circles = photozs.map(photoz => {
           return `<g class="circle-group">
             <circle cx="${200 + (ra - photoz.ra) * (400 / 0.0212)}" cy="${200 + (dec - photoz.dec) * (400 / 0.0213)}" r="40" stroke-width="2px" fill="transparent" />
-            <text x="${200 + (ra - photoz.ra) * (400 / 0.0212)}" y="${230 + (dec - photoz.dec) * (400 / 0.0213)}" fill="black" stroke="transparent" text-anchor="middle" alignment-baseline="hanging">photoz=${photoz.photoz}</text>
+            <text x="${200 + (ra - photoz.ra) * (400 / 0.0212)}" y="${230 + (dec - photoz.dec) * (400 / 0.0213)}" fill="black" stroke="transparent" text-anchor="middle" alignment-baseline="hanging">pz=${photoz.photoz}</text>
           </g>`
         })
         svg.innerHTML = circles.join('')
