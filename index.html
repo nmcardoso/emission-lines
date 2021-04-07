@@ -155,13 +155,7 @@
 
     <p>Notes:
     <ul>
-      <li>To load SDSS Spectra, this program looks first for <b>specObjID</b> column, if missing a cone search will be
-        performed using <b>RA</b> and <b>DEC</b> columns with 1 arcsec of radius;</li>
-      <li>To load SPLUS Spectra, a column called <b>ID</b> must be provided;</li>
-      <li>To load Legacy Server Image, columns called <b>RA</b> and <b>DEC</b> must be provided;</li>
-      <li>To load EW, a column called <b>EW_Ha_6562</b> must be provided;</li>
-      <li>To load Subclass, this program looks first for <b>subclass</b> column, if missing a cone search will be
-        performed using <b>RA</b> and <b>DEC</b> columns with 1 arcsec of radius.</li>
+      <li>This program uses <b>RA</b> and <b>DEC</b> columns from source table to load all data.</li>
     </ul>
     </p>
     <br />
@@ -542,7 +536,7 @@
         }
 
         if (idIdx > -1) {
-          const splusSpecUrl = `https://splus-spectra.herokuapp.com/plot?id=${data[i][idIdx]}&${sspecLines.join('&')}`
+          const splusSpecUrl = `https://splus-spectra.herokuapp.com/plot?ra=${ra}&dec=${dec}&${sspecLines.join('&')}`
           cellSplusSpec.innerHTML = `<a href="${splusSpecUrl}" data-lightbox="row-${i}"><img src="${splusSpecUrl}" height="90px" loading="lazy" onerror="retryImageLoad(this);" /></a>`
         }
 
