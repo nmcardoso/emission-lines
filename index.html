@@ -537,10 +537,11 @@
 
         if (idIdx > -1) {
           const splusSpecUrl = `https://splus-spectra.herokuapp.com/plot?id=${data[i][idIdx]}&${sspecLines.join('&')}`
+          cellSplusSpec.innerHTML = `<a href="${splusSpecUrl}" data-lightbox="row-${i}"><img src="${splusSpecUrl}" height="90px" loading="lazy" onerror="retryImageLoad(this);" /></a>`
         } else {
           const splusSpecUrl = `https://splus-spectra.herokuapp.com/plot?ra=${ra}&dec=${dec}&${sspecLines.join('&')}`
+          cellSplusSpec.innerHTML = `<a href="${splusSpecUrl}" data-lightbox="row-${i}"><img src="${splusSpecUrl}" height="90px" loading="lazy" onerror="retryImageLoad(this);" /></a>`
         }
-        cellSplusSpec.innerHTML = `<a href="${splusSpecUrl}" data-lightbox="row-${i}"><img src="${splusSpecUrl}" height="90px" loading="lazy" onerror="retryImageLoad(this);" /></a>`
 
         redshiftArray.push({ ra, dec, cellRedshift })
         const imgUrl = `https://www.legacysurvey.org/viewer/cutout.jpg?ra=${ra}&dec=${dec}&layer=dr8&pixscale=0.30`
