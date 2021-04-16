@@ -238,7 +238,7 @@
       let attempt = element.dataset.attempt || 0
       console.log('retrying to load image: ' + attempt)
 
-      if (attempt > 5) {
+      if (attempt > 3) {
         element.src = 'https://dummyimage.com/128x128/e8e8e8/474747.jpg&text=Not+Found'
       } else {
         attempt++
