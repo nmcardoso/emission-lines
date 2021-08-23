@@ -408,7 +408,7 @@
       dec = parseFloat(dec)
 
       return new Promise((resolve, reject) => {
-        fetch(`https://goldenrod-midnight-trader.glitch.me/z?ra=${ra}&dec=${dec}&radius=${radius}`)
+        fetch(`https://checker-melted-forsythia.glitch.me/z?ra=${ra}&dec=${dec}&radius=${radius}`)
           .then(r => r.json())
           .then(data => {
             const photozArr = []
@@ -439,7 +439,7 @@
       ra = parseFloat(ra)
       dec = parseFloat(dec)
 
-      fetch(`https://goldenrod-midnight-trader.glitch.me/z?ra=${ra}&dec=${dec}&radius=${radius}`)
+      fetch(`https://checker-melted-forsythia.glitch.me/z?ra=${ra}&dec=${dec}&radius=${radius}`)
         .then(r => r.json())
         .then(data => {
           const photozArr = []
@@ -546,7 +546,7 @@
 
         photoZArray.push({ ra, dec, cellPhotoZ })
 
-        const splusImgUrl = `https://goldenrod-midnight-trader.glitch.me/img?ra=${ra}&dec=${dec}`
+        const splusImgUrl = `https://checker-melted-forsythia.glitch.me/img?ra=${ra}&dec=${dec}`
         cellSplusImage.innerHTML = `<a href="${splusImgUrl}" data-lightbox="row-${i}"><img src="${splusImgUrl}" height="90px" loading="lazy" onerror="retryImageLoad(this);" /></a>`
         cellClass.innerHTML = `<select class="form-select class-selector">${classes.map(c => `<option value=${c}>${c}</option>`).join()}</select>`
 
@@ -583,7 +583,7 @@
     function wakeupServices() {
       urls = [
         'https://splus-spectra.herokuapp.com/wakeup',
-        'https://goldenrod-midnight-trader.glitch.me/wakeup',
+        'https://checker-melted-forsythia.glitch.me/wakeup',
         'https://red-mirror.herokuapp.com/'
       ]
 
