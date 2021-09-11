@@ -67,6 +67,23 @@
     .circle-group:hover text {
       filter: url(#bg-text-hover);
     }
+
+
+    .modal-dialog {
+      position: unset;
+    }
+
+    .modal-content {
+      position: unset;
+    }
+
+    .modal-body {
+      position: unset;
+    }
+
+    .alert {
+      position: unset;
+    }
   </style>
 </head>
 
@@ -184,7 +201,7 @@
       <div class="modal-content">
         <div class="modal-body">
           <div class="w-100 text-center">
-            <div class="img-overlay-wrap mx-auto">
+            <div id="img-overlay-wrap" class="img-overlay-wrap mx-auto">
               <img id="img-modal-img" src="" width="400px" height="400px" />
               <svg>
                 <defs>
@@ -212,6 +229,18 @@
           <div class="form-check-inline form-switch">
             <input class="form-check-input" type="checkbox" id="photoz-overlay-check">
             <label class="form-check-label" for="photoz-overlay-check">PhotoZ</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="img-modal-splus" class="modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div class="w-100 text-center">
+            <img src="" alt="" width="400px" height="400px" class="img-modal-img" id="img-modal-splus-img">
           </div>
         </div>
       </div>
@@ -547,7 +576,9 @@
         photoZArray.push({ ra, dec, cellPhotoZ })
 
         const splusImgUrl = `https://checker-melted-forsythia.glitch.me/img?ra=${ra}&dec=${dec}`
-        cellSplusImage.innerHTML = `<a href="${splusImgUrl}" data-lightbox="row-${i}"><img src="${splusImgUrl}" height="90px" loading="lazy" onerror="retryImageLoad(this);" /></a>`
+        cellSplusImage.innerHTML = `<img src="${splusImgUrl}" height="90px" loading="lazy" data-bs-toggle="modal" data-bs-target="#img-modal-splus" data-ra=${ra} data-dec=${dec} onerror="retryImageLoad(this);" />`
+        // cellSplusImage.innerHTML = `<a href="${splusImgUrl}" data-lightbox="row-${i}"><img src="${splusImgUrl}" height="90px" loading="lazy" onerror="retryImageLoad(this);" /></a>`
+
         cellClass.innerHTML = `<select class="form-select class-selector">${classes.map(c => `<option value=${c}>${c}</option>`).join()}</select>`
 
         if ('subclassElement' in sdssRow || 'imageElement' in sdssRow) {
@@ -643,6 +674,34 @@
         })
         svg.innerHTML = circles.join('')
       })
+
+      // const imgWrapper = document.getElementById('img-overlay-wrap')
+      // imgWrapper.addEventListener('click', function (event) {
+      //   const x = event.pageX - this.offsetLeft
+      //   const y = event.pageY - this.offsetTop
+      //   // console.log('x', x, 'ev.pageX', event.pageX, 'this.offsetLeft', this.offsetLeft)
+      //   // console.log('y', y)
+      //   const newRa = (-(x - 200) * 0.0212 / 400) + parseFloat(ra)
+      //   const newDec = (-(y - 200) * 0.0212 / 400) + parseFloat(dec)
+      //   console.log(newRa, ',', newDec)
+      //   document.getElementById('img-modal-img').src = `https://www.legacysurvey.org/viewer/cutout.jpg?ra=${newRa}&dec=${newDec}&layer=dr8&pixscale=0.30`
+      //   console.log(`https://www.legacysurvey.org/viewer/cutout.jpg?ra=${newRa}&dec=${newDec}&layer=dr8&pixscale=0.30`)
+      // })
+
+      // imgWrapper.addEventListener('mousemove', function (event) {
+      //   const x = event.pageX - this.offsetLeft
+      //   const y = event.pageY - this.offsetTop
+      //   // const newRa = (-(x - 200) * 0.03 / 400) + parseFloat(ra)
+      //   // const newDec = (-(y - 200) * 0.03 / 400) + parseFloat(dec)
+      //   // console.log(newRa, ',', newDec)
+      // })
+    })
+
+    const splusImageModal = document.getElementById('img-modal-splus')
+    splusImageModal.addEventListener('show.bs.modal', function (event) {
+      const img = event.relatedTarget
+      const url = img.getAttribute('src')
+      document.getElementById('img-modal-splus-img').src = url
     })
 
     document.getElementById('redshift-overlay-check').addEventListener('change', function () {
