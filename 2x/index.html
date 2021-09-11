@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emission Lines</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+  <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0"
+    crossorigin="anonymous"></script>
+
+  <style>
+    td {
+      max-width: 192px;
+      word-wrap: break-word;
+    }
+
+    hr {
+      margin: 0.3rem 0 !important;
+    }
+
+    table img:hover {
+      cursor: pointer;
+    }
+
+    .img-overlay-wrap {
+      position: relative;
+      display: inline-block;
+      transition: transform 150ms ease-in-out;
+    }
+
+    .img-overlay-wrap img {
+      display: block;
+      max-width: 100%;
+      height: auto;
+    }
+
+    .img-overlay-wrap svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .circle-group:hover {
+      cursor: pointer;
+    }
+
+    .circle-group circle {
+      stroke: white;
+    }
+
+    .circle-group:hover circle {
+      stroke: #AFEEEE;
+    }
+
+    .circle-group text {
+      filter: url(#bg-text);
+      font: 13px px Arial, sans-serif;
+      font-weight: bold;
+    }
+
+    .circle-group:hover text {
+      filter: url(#bg-text-hover);
+    }
+
+
+    .modal-dialog {
+      position: unset;
+    }
+
+    .modal-content {
+      position: unset;
+    }
+
+    .modal-body {
+      position: unset;
+    }
+
+    .alert {
+      position: unset;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container-fluid">
+    <form id="form" class="mt-2">
+      <div class="row mb-1 align-items-center">
+        <label for="radius" class="col-1 col-form-label"><b>Z</b> Search Radius</label>
+        <div class="col-4">
+          <input type="text" class="form-control" id="radius" value="20">
+        </div>
+      </div>
+
+      <div class="row mb-1">
+        <label for="classes" class="col-1 col-form-label">Classes</label>
+        <div class="col-4">
+          <div class="input-group mb-1">
+            <input id="class-input" type="text" class="form-control" placeholder="Class Name">
+            <button id="add-class" class="btn btn-success" type="button">Add</button>
+            <button id="remove-class" class="btn btn-danger" type="button">Remove</button>
+          </div>
+          <select class="form-select" size="5" id="classes"></select>
+        </div>
+      </div>
+
+      <div class="row mb-1 align-items-center">
+        <label for="classes" class="col-1 col-form-label">S-Spectra</label>
+        <div class="col-4">
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="sel-iso" checked>
+            <label class="form-check-label" for="sel-iso">Iso</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="sel-aper6" checked>
+            <label class="form-check-label" for="sel-aper6">Aper-6</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="sel-aper3">
+            <label class="form-check-label" for="sel-aper3">Aper-3</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="sel-auto">
+            <label class="form-check-label" for="sel-auto">Auto</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="sel-petro">
+            <label class="form-check-label" for="sel-petro">Petro</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="sel-pstotal">
+            <label class="form-check-label" for="sel-pstotal">PStotal</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mb-1 align-items-center">
+        <label for="input" class="col-1 col-form-label">Table File</label>
+        <div class="col-4">
+          <div class="row">
+            <div class="col-9">
+              <input class="form-control" type="file" id="input">
+            </div>
+            <div class="col-3">
+              <button type="submit" class="btn btn-primary w-100" id="load-table">Load Table</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <br>
+
+    <form id="download-form">
+      <div class="row mb-1 align-items-center">
+        <label for="download-filename" class="col-auto col-form-label"><b>Save Classifications</b></label>
+        <div class="col-3">
+          <div class="input-group mb-1">
+            <input id="download-filename" type="text" class="form-control" placeholder="Filename">
+            <button type="submit" class="btn btn-outline-primary" type="button">Download</button>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <br>
+
+    <p>Notes:
+    <ul>
+      <li>This program uses <b>RA</b> and <b>DEC</b> columns from source table to load all data.</li>
+    </ul>
+    </p>
+    <br />
+    <table id="table" class="table table-striped table-hover">
+      <thead>
+        <tr>
+          <th style="min-width: 170px;">Class</th>
+          <th>ID</th>
+          <th>RA</th>
+          <th>DEC</th>
+          <th>PhotoZ</th>
+          <th>Z (spec)</th>
+          <th>SPEC</th>
+          <th>S-SPEC</th>
+          <th>Legacy</th>
+          <th>S-PLUS</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
+
+  <div id="img-modal" class="modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div class="w-100 text-center">
+            <div id="img-overlay-wrap" class="img-overlay-wrap mx-auto">
+              <img id="img-modal-img" src="" width="800px" height="800px" />
+              <svg>
+                <defs>
+                  <filter x="-0.03" y="-0.03" width="1.06" height="1.06" id="bg-text">
+                    <feFlood flood-color="#FFFFFF" />
+                    <feComposite in="SourceGraphic" operator="over" />
+                  </filter>
+                  <filter x="-0.03" y="-0.03" width="1.06" height="1.06" id="bg-text-hover">
+                    <feFlood flood-color="#AFEEEE" />
+                    <feComposite in="SourceGraphic" operator="over" />
+                  </filter>
+                </defs>
+              </svg>
+              <svg id="img-modal-mask-z" viewBox="0 0 800 800"></svg>
+              <svg id="img-modal-mask-photoz" class="d-none" viewBox="0 0 800 800"></svg>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <div class="form-check-inline form-switch">
+            <input class="form-check-input" type="checkbox" id="redshift-overlay-check" checked>
+            <label class="form-check-label" for="redshift-overlay-check">Redshift</label>
+          </div>
+
+          <div class="form-check-inline form-switch">
+            <input class="form-check-input" type="checkbox" id="photoz-overlay-check">
+            <label class="form-check-label" for="photoz-overlay-check">PhotoZ</label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"
+    integrity="sha512-rKFvwjvE4liWPlFnvH4ZhRDfNZ9FOpdkD/BU5gAIA3VS3vOQrQ5BjKgbO3kxebKhHdHcNUHLqxQYSoxee9UwgA=="
+    crossorigin="anonymous"></script>
+
+  <script>
+    function updateQueryString(uri, key, value) {
+      const re = new RegExp('([?&])' + key + '=.*?(&|$)', 'i')
+      const separator = uri.indexOf('?') !== -1 ? '&' : '?'
+      if (uri.match(re)) {
+        return uri.replace(re, '$1' + key + '=' + value + '$2')
+      }
+      else {
+        return uri + separator + key + '=' + value
+      }
+    }
+
+    function retryImageLoad(element) {
+      let attempt = element.dataset.attempt || 0
+      console.log('retrying to load image: ' + attempt)
+
+      if (attempt > 3) {
+        element.src = 'https://dummyimage.com/128x128/e8e8e8/474747.jpg&text=Not+Found'
+      } else {
+        attempt++
+        element.src = updateQueryString(element.src, 'attempt', attempt)
+        element.dataset.attempt = attempt
+      }
+
+      return true
+    }
+
+    function addClass() {
+      const className = document.getElementById('class-input')
+      if (!className.value) return
+      const allClasses = document.getElementById('classes')
+      const option = document.createElement('option')
+      option.text = className.value
+      option.value = className.value
+      allClasses.add(option)
+      className.value = ''
+    }
+
+    function removeClass() {
+      const allClasses = document.getElementById('classes')
+      allClasses.remove(allClasses.selectedIndex)
+    }
+
+    function triggerButton(event) {
+      if (event.keyCode === 13) {
+        event.preventDefault()
+        document.getElementById('add-class').click()
+      }
+    }
+
+    function download() {
+      console.log('aqui')
+      const rows = document.getElementById('table').getElementsByTagName('tbody')[0].children
+      let csv = 'data:text/csv;charset=utf-8,ID,RA,DEC,CLASS\n'
+
+      for (let i = 0; i < rows.length; i++) {
+        if (rows[i].getElementsByClassName('class-selector')[0].selectedIndex < 1) continue
+
+        const className = rows[i].getElementsByClassName('class-selector')[0].value
+        const id = rows[i].getElementsByClassName('id-cell')[0].textContent
+        const ra = rows[i].getElementsByClassName('ra-cell')[0].textContent
+        const dec = rows[i].getElementsByClassName('dec-cell')[0].textContent
+        csv += `${id},${ra},${dec},${className}\n`
+      }
+
+      let filename = document.getElementById('download-filename').value || 'table.csv'
+      filename = filename.trim()
+      filename += filename.endsWith('.csv') ? '' : '.csv'
+
+      const encodedCsv = encodeURI(csv)
+      const $a = document.createElement('a')
+      $a.setAttribute('href', encodedCsv)
+      $a.setAttribute('download', filename)
+      document.body.appendChild($a)
+      console.log('aqui 2')
+      $a.click()
+      $a.remove()
+    }
+
+    function toNumber(n) {
+      const parts = n.split('E+');
+      let first = parts[0].replace('.', '').replace(',', '');
+      const zeroes = parseInt(parts[1], 10) - (first.length - 1);
+      for (let i = 0; i < zeroes; i++) { first += '0'; }
+      return first
+    }
+
+    function findHeaderId(header, str) {
+      return header.findIndex(e => {
+        return String(e).toLowerCase().startsWith(String(str).toLowerCase())
+      })
+    }
+
+    function sddsConeSearch(args) {
+      fetch(`https://skyserver.sdss.org/dr16/SkyServerWS/SpectroQuery/ConeSpectro?radius=0.01667&dec=${args.dec}&ra=${args.ra}&limit=1&format=xml&specparams=specObjID,subclass&imgparams=none&zWarning=on`)
+        .then(r => r.text())
+        .then(str => (new DOMParser()).parseFromString(str, 'application/xml'))
+        .then(data => {
+          if (args.imageElement) {
+            let id = data.querySelector('Table[name="Table1"] > Row > Item[name="specObjID"]')
+            if (id) {
+              const specUrl = `https://skyserver.sdss.org/dr16/en/get/SpecById.ashx?id=${id.textContent}`
+              args.imageElement.innerHTML = `<a href="${specUrl}" data-lightbox="row-${args.rowId}"><img src="${specUrl}" width="180px" height="90px" loading="lazy" /></a>`
+            }
+          }
+
+          if (args.subclassElement) {
+            let subclass = data.querySelector('Table[name="Table1"] > Row > Item[name="subclass"]')
+            subclass = subclass ? subclass.textContent : ''
+            args.subclassElement.innerHTML = subclass
+          }
+        })
+    }
+
+    function redshiftSearch(ra, dec, element) {
+      let delta = document.getElementById('radius').value
+      if (!!delta) {
+        delta = parseFloat(delta) / 3600
+      } else {
+        delta = 3.0 / 3600
+      }
+
+      fetch(`https://red-mirror.herokuapp.com/https://www.legacysurvey.org/viewer/spec/1/cat.json?ralo=${ra - delta}&rahi=${ra + delta}&declo=${dec - delta}&dechi=${dec + delta}`, { headers: { 'Origin': 'google.com' } })
+        .then(r => r.json())
+        .then(data => {
+          const redshifts = []
+          for (let i = 0; i < Math.min(data.name.length, 4); i++) {
+            const raNear = data.rd[i][0]
+            const decNear = data.rd[i][1]
+
+            redshifts.push({
+              ra: raNear,
+              dec: decNear,
+              name: data.name[i],
+              // dist: Math.sqrt(Math.pow(raNear - ra, 2) + Math.pow(decNear - dec, 2))
+            })
+          }
+          element.innerHTML = redshifts.map(r => r.name).join('<hr>')
+        })
+    }
+
+    function redshiftSearchPromise(ra, dec) {
+      let delta = document.getElementById('radius').value
+      if (!!delta) {
+        delta = parseFloat(delta) / 3600
+      } else {
+        delta = 3.0 / 3600
+      }
+
+      ra = parseFloat(ra)
+      dec = parseFloat(dec)
+
+      return new Promise((resolve, reject) => {
+        fetch(`https://red-mirror.herokuapp.com/https://www.legacysurvey.org/viewer/spec/1/cat.json?ralo=${ra - delta}&rahi=${ra + delta}&declo=${dec - delta}&dechi=${dec + delta}`, { headers: { 'Origin': 'google.com' } })
+          .then(r => r.json())
+          .then(data => {
+            const redshifts = []
+            for (let i = 0; i < data.name.length; i++) {
+              const raNear = data.rd[i][0]
+              const decNear = data.rd[i][1]
+
+              redshifts.push({
+                ra: raNear,
+                dec: decNear,
+                z: data.name[i].match(/z=.*/)[0],
+                // dist: Math.sqrt(Math.pow(raNear - ra, 2) + Math.pow(decNear - dec, 2))
+              })
+            }
+            resolve(redshifts)
+          })
+          .catch(e => console.log(e))
+      })
+    }
+
+    function photoZSearchPromise(ra, dec) {
+      let radius = document.getElementById('radius').value
+      if (!!radius) {
+        radius = parseFloat(radius) / 3600
+      } else {
+        radius = 3.0 / 3600
+      }
+
+      ra = parseFloat(ra)
+      dec = parseFloat(dec)
+
+      return new Promise((resolve, reject) => {
+        fetch(`https://goldenrod-midnight-trader.glitch.me/z?ra=${ra}&dec=${dec}&radius=${radius}`)
+          .then(r => r.json())
+          .then(data => {
+            const photozArr = []
+            for (let i = 0; i < data.data.length; i++) {
+              const raNear = data.data[i][0]
+              const decNear = data.data[i][1]
+              photozArr.push({
+                ra: raNear,
+                dec: decNear,
+                photoz: data.data[i][2],
+                // dist: Math.sqrt(Math.pow(raNear - ra, 2) + Math.pow(decNear - dec, 2))
+              })
+            }
+            resolve(photozArr)
+          })
+          .catch(e => console.log(e))
+      })
+    }
+
+    function photoZSearch(ra, dec, element) {
+      let radius = document.getElementById('radius').value
+      if (!!radius) {
+        radius = parseFloat(radius) / 3600
+      } else {
+        radius = 3.0 / 3600
+      }
+
+      ra = parseFloat(ra)
+      dec = parseFloat(dec)
+
+      fetch(`https://goldenrod-midnight-trader.glitch.me/z?ra=${ra}&dec=${dec}&radius=${radius}`)
+        .then(r => r.json())
+        .then(data => {
+          const photozArr = []
+          for (let i = 0; i < data.data.length; i++) {
+            const raNear = data.data[i][0]
+            const decNear = data.data[i][1]
+            photozArr.push({
+              ra: raNear,
+              dec: decNear,
+              photoz: data.data[i][2],
+              // dist: Math.sqrt(Math.pow(raNear - ra, 2) + Math.pow(decNear - dec, 2))
+            })
+          }
+          element.innerHTML = photozArr.map(p => p.photoz).join('<hr>')
+        })
+    }
+
+    const asyncInterval = async (ra, dec, element, runId) => {
+      return new Promise(async (resolve, reject) => {
+        const resp = await fetch(`http://localhost:8080/spec/query?ra=${ra}&dec=${dec}`)
+        const job = await resp.json()
+        const jobId = job.jobId
+
+        const interval = setInterval(async () => {
+          if (runId + 1 < lastRunId) clearInterval(interval)
+
+          const statusResp = await fetch(`http://localhost:8080/spec/plot?jobId=${jobId}`)
+          if (statusResp.headers.get('Content-Type') == 'image/jpg') {
+            const imgBlob = await statusResp.blob()
+            const url = URL.createObjectURL(imgBlob)
+            element.getElementsByTagName('img')[0].src = url
+            resolve()
+            clearInterval(interval)
+          }
+        }, 8500)
+      })
+    }
+
+    function createTable(result) {
+      const data = result.data
+      const header = data[0]
+      const specIdIdx = findHeaderId(header, 'specObjID')
+      const raIdx = findHeaderId(header, 'ra')
+      const decIdx = findHeaderId(header, 'dec')
+      const ewIdx = findHeaderId(header, 'EW_Ha_6562')
+      const subclassIdx = findHeaderId(header, 'subclass')
+      const idIdx = findHeaderId(header, 'id')
+      const specArray = []
+      const redshiftArray = []
+      const photoZArray = []
+
+      const classes = ['-']
+      const $classes = document.getElementById('classes')
+      for (let i = 0; i < $classes.length; i++) {
+        classes.push($classes.options.item(i).value)
+      }
+
+      const sspecLines = ['iso', 'aper3', 'aper6', 'auto', 'petro', 'pstotal'].filter(e => {
+        return document.getElementById(`sel-${e}`).checked
+      })
+
+      const tbody = document.getElementById('table').getElementsByTagName('tbody')[0]
+      for (let i = 1; i < data.length; i++) {
+        const row = tbody.insertRow()
+        const cellClass = row.insertCell()
+        const cellID = row.insertCell()
+        const cellRA = row.insertCell()
+        const cellDEC = row.insertCell()
+        const cellPhotoZ = row.insertCell()
+        const cellRedshift = row.insertCell()
+        const cellSPEC = row.insertCell()
+        const cellSplusSpec = row.insertCell()
+        const cellImage = row.insertCell()
+        const cellSplusImage = row.insertCell()
+
+        cellID.classList.add('id-cell')
+        cellRA.classList.add('ra-cell')
+        cellDEC.classList.add('dec-cell')
+
+        const ra = data[i][raIdx]
+        const dec = data[i][decIdx]
+
+        const sdssRow = {}
+
+        cellRA.innerHTML = ra
+        cellDEC.innerHTML = dec
+        if (idIdx > -1) {
+          cellID.innerHTML = data[i][idIdx]
+        }
+
+        if (specIdIdx > -1) {
+          const specUrl = `https://skyserver.sdss.org/dr16/en/get/SpecById.ashx?id=${data[i][specIdIdx]}`
+          cellSPEC.innerHTML = `<a href="${specUrl}" data-lightbox="row-${i}"><img src="${specUrl}" width="180px" height="90px" loading="lazy" onerror="retryImageLoad(this);" /></a>`
+        } else if (specIdIdx <= -1 || !!!data[i][specIdIdx]) {
+          sdssRow.imageElement = cellSPEC
+        }
+
+        const splusSpecUrl = `https://splus-spectra.herokuapp.com/plot?ra=${ra}&dec=${dec}&${sspecLines.join('&')}`
+        cellSplusSpec.innerHTML = `<a href="${splusSpecUrl}" data-lightbox="row-${i}"><img src="${splusSpecUrl}" height="90px" loading="lazy" onerror="retryImageLoad(this);" /></a>`
+
+        redshiftArray.push({ ra, dec, cellRedshift })
+        const imgUrl = `https://www.legacysurvey.org/viewer/cutout.jpg?ra=${ra}&dec=${dec}&layer=dr8&pixscale=0.60`
+        cellImage.innerHTML = `<img src="${imgUrl}" height="90px" loading="lazy" data-bs-toggle="modal" data-bs-target="#img-modal" data-ra=${ra} data-dec=${dec} onerror="retryImageLoad(this);" />`
+
+        photoZArray.push({ ra, dec, cellPhotoZ })
+
+        const splusImgUrl = `https://goldenrod-midnight-trader.glitch.me/img?ra=${ra}&dec=${dec}`
+        cellSplusImage.innerHTML = `<a href="${splusImgUrl}" data-lightbox="row-${i}"><img src="${splusImgUrl}" height="90px" loading="lazy" onerror="retryImageLoad(this);" /></a>`
+        cellClass.innerHTML = `<select class="form-select class-selector">${classes.map(c => `<option value=${c}>${c}</option>`).join()}</select>`
+
+        if ('subclassElement' in sdssRow || 'imageElement' in sdssRow) {
+          sdssRow.ra = ra
+          sdssRow.dec = dec
+          sdssRow.rowId = i
+          specArray.push(sdssRow)
+        }
+      }
+
+      specArray.forEach((row, i) => {
+        setTimeout(() => sddsConeSearch(row), i * 140)
+      })
+      redshiftArray.forEach((row, i) => {
+        setTimeout(() => redshiftSearch(row.ra, row.dec, row.cellRedshift), i * 140)
+      })
+      photoZArray.forEach((row, i) => {
+        setTimeout(() => photoZSearch(row.ra, row.dec, row.cellPhotoZ), i * 140)
+      })
+    }
+
+    function handleFile() {
+      document.getElementById('table').getElementsByTagName('tbody')[0].innerHTML = ''
+      if (document.getElementById('input').files.length < 1) return
+      const file = document.getElementById('input').files[0]
+      Papa.parse(file, {
+        complete: createTable,
+        dynamicTyping: true,
+        skipEmptyLines: true
+      })
+    }
+
+    function wakeupServices() {
+      urls = [
+        'https://splus-spectra.herokuapp.com/wakeup',
+        'https://goldenrod-midnight-trader.glitch.me/wakeup',
+        'https://red-mirror.herokuapp.com/'
+      ]
+
+      Promise.all(urls.map(u => fetch(u))).catch(console.log)
+    }
+
+    wakeupServices()
+
+    // document.getElementById('input').addEventListener('change', handleFile, false)
+    document.getElementById('form').addEventListener('submit', e => {
+      e.preventDefault()
+      handleFile()
+    }, true)
+    document.getElementById('download-form').addEventListener('submit', e => {
+      e.preventDefault()
+      download()
+    }, true)
+    document.getElementById('add-class').addEventListener('click', addClass)
+    document.getElementById('remove-class').addEventListener('click', removeClass)
+    document.getElementById('class-input').addEventListener('keyup', triggerButton)
+
+    $(document).ready(() => {
+      lightbox.option({
+        fadeDuration: 180,
+        imageFadeDuration: 180,
+        resizeDuration: 180
+      })
+    })
+
+    const imageModal = document.getElementById('img-modal')
+    imageModal.addEventListener('show.bs.modal', function (event) {
+      const img = event.relatedTarget
+      const ra = img.getAttribute('data-ra')
+      const dec = img.getAttribute('data-dec')
+      const url = img.getAttribute('src')
+
+      document.getElementById('img-modal-img').src = url
+
+      photoZSearchPromise(ra, dec).then(photozs => {
+        const svg = document.getElementById('img-modal-mask-photoz')
+        const circles = photozs.map(photoz => {
+          return `<g class="circle-group">
+            <circle cx="${400 + (ra - photoz.ra) * (800 / 0.0425)}" cy="${400 + (dec - photoz.dec) * (800 / 0.0425)}" r="40" stroke-width="2px" fill="transparent" />
+            <text x="${400 + (ra - photoz.ra) * (800 / 0.0425)}" y="${430 + (dec - photoz.dec) * (800 / 0.0425)}" fill="black" stroke="transparent" text-anchor="middle" alignment-baseline="hanging">pz=${photoz.photoz}</text>
+          </g>`
+        })
+        svg.innerHTML = circles.join('')
+      })
+
+      redshiftSearchPromise(ra, dec).then(redshifts => {
+        const svg = document.getElementById('img-modal-mask-z')
+        const circles = redshifts.map(redshift => {
+          return `<g class="circle-group">
+            <circle cx="${400 + (ra - redshift.ra) * (800 / 0.0425)}" cy="${400 + (dec - redshift.dec) * (800 / 0.0425)}" r="40" stroke-width="2px" fill="transparent" />
+            <text x="${400 + (ra - redshift.ra) * (800 / 0.0425)}" y="${430 + (dec - redshift.dec) * (800 / 0.0425)}" fill="black" stroke="transparent" text-anchor="middle" alignment-baseline="hanging">${redshift.z}</text>
+          </g>`
+        })
+        svg.innerHTML = circles.join('')
+      })
+    })
+
+    document.getElementById('redshift-overlay-check').addEventListener('change', function () {
+      if (this.checked === true) {
+        document.getElementById('img-modal-mask-z').classList.remove('d-none')
+      } else {
+        document.getElementById('img-modal-mask-z').classList.add('d-none')
+      }
+    })
+
+    document.getElementById('photoz-overlay-check').addEventListener('change', function () {
+      if (this.checked === true) {
+        document.getElementById('img-modal-mask-photoz').classList.remove('d-none')
+      } else {
+        document.getElementById('img-modal-mask-photoz').classList.add('d-none')
+      }
+    })
+  </script>
+</body>
+
+</html>
