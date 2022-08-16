@@ -607,7 +607,8 @@
       Papa.parse(file, {
         complete: createTable,
         dynamicTyping: true,
-        skipEmptyLines: true
+        skipEmptyLines: true,
+        comments: '%'
       })
     }
 
