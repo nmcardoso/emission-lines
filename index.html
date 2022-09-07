@@ -570,7 +570,7 @@
         cellSplusSpec.innerHTML = `<a href="${splusSpecUrl}" data-lightbox="row-${i}"><img src="${splusSpecUrl}" height="90px" loading="lazy" onerror="retryImageLoad(this);" /></a>`
 
         redshiftArray.push({ ra, dec, cellRedshift })
-        const imgUrl = `https://www.legacysurvey.org/viewer/cutout.jpg?ra=${ra}&dec=${dec}&layer=dr8&pixscale=0.30`
+        const imgUrl = `https://www.legacysurvey.org/viewer/cutout.jpg?ra=${ra}&dec=${dec}&layer=ls-dr10-early-grz&pixscale=0.30`
         cellImage.innerHTML = `<img src="${imgUrl}" height="90px" loading="lazy" data-bs-toggle="modal" data-bs-target="#img-modal" data-ra=${ra} data-dec=${dec} onerror="retryImageLoad(this);" />`
 
         photoZArray.push({ ra, dec, cellPhotoZ })
@@ -685,7 +685,7 @@
       //   const newRa = (-(x - 200) * 0.0212 / 400) + parseFloat(ra)
       //   const newDec = (-(y - 200) * 0.0212 / 400) + parseFloat(dec)
       //   console.log(newRa, ',', newDec)
-      //   document.getElementById('img-modal-img').src = `https://www.legacysurvey.org/viewer/cutout.jpg?ra=${newRa}&dec=${newDec}&layer=dr8&pixscale=0.30`
+      //   document.getElementById('img-modal-img').src = `https://www.legacysurvey.org/viewer/cutout.jpg?ra=${newRa}&dec=${newDec}&layer=ls-dr10-early-grz&pixscale=0.30`
       //   console.log(`https://www.legacysurvey.org/viewer-dev/cutout.jpg?ra=${newRa}&dec=${newDec}&layer=ls-dr10-early-grz&pixscale=0.30`)
       // })
 
